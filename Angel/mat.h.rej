@@ -1,0 +1,10 @@
+--- template1/Angel/mat.h	2013-10-04 01:29:56.000000000 -0700
++++ template1/Angel/mat.h	2015-01-10 00:03:55.802442972 -0800
+@@ -8,6 +8,7 @@
+ #define __ANGEL_MAT_H__
+ 
+ #include "vec.h"
++#include <stdio.h>
+ 
+ namespace Angel {
+ 
