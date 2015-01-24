@@ -327,10 +327,32 @@ void drawGround(mat4 view_trans){
     mat4 model_trans(1.0f);
     //model a ground
     set_colour(0.0f, 0.8f, 0.0f);
-    model_trans *= Translate(0, -10, 0);
+    model_trans *= Translate(0, -10.0f, 0);
     model_trans *= Scale(100, 1, 100);
     model_view = view_trans * model_trans;
     drawCube();
+}
+
+void drawFlower(mat4 view_trans){
+    mat4 model_trans(1.0f);
+    model_trans *= Translate(0,-10.0f, 0);
+    
+    for(int i = 0; i < 8; i++) {
+        set_colour(0.8f, 0.8f, 0);
+        model_trans *= Translate(0, 1.0f, 0);
+        model_trans *= RotateZ(i*sin(2*TIME));
+        mvstack.push(model_trans);
+        model_trans *= Scale(0.2f, 1.0f, 0.2f);
+        model_view = view_trans * model_trans;
+        drawCube();
+        model_trans = mvstack.pop();
+    }
+    
+    set_colour(1.0f, 0, 0);
+    model_trans *= Translate(0, 1.0f, 0);
+    model_trans *= RotateZ(8*sin(2*TIME));
+    model_view = view_trans * model_trans;
+    drawSphere();
 }
 
 void display(void)
@@ -357,32 +379,36 @@ void display(void)
  
     drawGround(view_trans);
     
-    //model sun
-    mvstack.push(model_trans);//push
-    set_colour(0.8f, 0.0f, 0.0f);
-    model_trans *= Scale(3.0);
+    //Reset model_view matrix to origin, translate down to plane
     model_view = view_trans * model_trans;
-    drawSphere();
-    model_trans = mvstack.pop();//pop
+    drawFlower(view_trans);
+
+    // //model sun
+    // mvstack.push(model_trans);//push
+    // set_colour(0.8f, 0.0f, 0.0f);
+    // model_trans *= Scale(3.0);
+    // model_view = view_trans * model_trans;
+    // drawSphere();
+    // model_trans = mvstack.pop();//pop
     
-    //model earth
-    model_trans *= RotateY(10.0*TIME);
-    model_trans *= Translate(15.0f, 5*sin(30*DegreesToRadians*TIME), 0.0f);
-    mvstack.push(model_trans);
-    model_trans *= RotateY(300.0*TIME);//self rotation of earth
-    set_colour(0.0f, 0.0f, 0.8f);
-    model_view = view_trans * model_trans;
-    drawCube();
+    // //model earth
+    // model_trans *= RotateY(10.0*TIME);
+    // model_trans *= Translate(15.0f, 5*sin(30*DegreesToRadians*TIME), 0.0f);
+    // mvstack.push(model_trans);
+    // model_trans *= RotateY(300.0*TIME);//self rotation of earth
+    // set_colour(0.0f, 0.0f, 0.8f);
+    // model_view = view_trans * model_trans;
+    // drawCube();
     
-    model_trans = mvstack.pop();
+    // model_trans = mvstack.pop();
     
-    //model moon
-    set_colour(0.8f, 0.0f, 0.8f);
-    model_trans *= RotateY(30.0*TIME);
-    model_trans *= Translate(2.0f, 0.0f, 0.0f);
-    model_trans *= Scale(0.2);
-    model_view = view_trans * model_trans;
-    drawCylinder();
+    // //model moon
+    // set_colour(0.8f, 0.0f, 0.8f);
+    // model_trans *= RotateY(30.0*TIME);
+    // model_trans *= Translate(2.0f, 0.0f, 0.0f);
+    // model_trans *= Scale(0.2);
+    // model_view = view_trans * model_trans;
+    // drawCylinder();
     
     glutSwapBuffers();
     if(Recording == 1)
