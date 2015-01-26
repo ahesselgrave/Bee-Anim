@@ -81,7 +81,7 @@ ShapeData sphereData;
 ShapeData coneData;
 ShapeData cylData;
 
-// Matrix stack that can be used to push and pop the modelview matrix.
+// Matrix stack that can be used to push and pop the model_view matrix.
 class MatrixStack {
     int    _index;
     int    _size;
@@ -354,15 +354,25 @@ void drawBeeLeg() {
     // mvstack.push(model_view);
 }
 
+void drawBee() {
+    //temp motion code
+    //TODO: substitute cube with bee
+    mvstack.push(model_view);
+    set_colour(0,0,1);
+    model_view *= RotateY(-TIME*60.0);
+    model_view *= Translate(10*cos(TIME*DegreesToRadians), 8+2*sin(3*TIME), 10*sin(TIME*DegreesToRadians));
+    drawCylinder();
+    model_view = mvstack.pop();
+}
 // void drawSquidLeg(double phase, double rand1, double rand2){
 //     float l_segment = 3, n_segment = 10,
-//     amplitude = 30, omega = 120, theta;
+//     amplitude = 30, omega = 120, theta
     
 //     for(int i = 0; i < n_segment;i++){
 //         theta = rand1*amplitude * sin(phase+i*rand2*omega*DegreesToRadians*TIME);
 //         model_view *= RotateZ(theta);
 //         model_view *= Translate(0, l_segment/2, 0);
-//         mvstack.push(model_view);
+        // mvstack.push(model_view);
 //         model_view *= Scale(1, l_segment, 1);
 //         drawCube();
 //         model_view = mvstack.pop();
@@ -425,7 +435,7 @@ void display(void)
     model_view *= Translate(0,-10,0);
  
     drawFlower();   
-
+    drawBee();
     // for(int i = 0; i < 9; i++){
     //     mvstack.push(model_view);
     //     model_view *= Translate(40*(i/3 - 1), 0, 40*(i%3-1));
