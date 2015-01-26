@@ -327,34 +327,74 @@ void drawGround(mat4 view_trans){
     mat4 model_trans(1.0f);
     //model a ground
     set_colour(0.0f, 0.8f, 0.0f);
-    model_trans *= Translate(0, -10.0f, 0);
+    model_trans *= Translate(0, -10, 0);
     model_trans *= Scale(100, 1, 100);
     model_view = view_trans * model_trans;
     drawCube();
 }
 
-void drawFlower(mat4 view_trans){
-    mat4 model_trans(1.0f);
-    model_trans *= Translate(0,-10.0f, 0);
-    
-    for(int i = 0; i < 8; i++) {
+void drawFlower() {
+    mvstack.push(model_view);
+    for (int i = 0; i < 8; i++) {
         set_colour(0.8f, 0.8f, 0);
-        model_trans *= Translate(0, 1.0f, 0);
-        model_trans *= RotateZ(i*sin(2*TIME));
-        mvstack.push(model_trans);
-        model_trans *= Scale(0.2f, 1.0f, 0.2f);
-        model_view = view_trans * model_trans;
+        model_view *= RotateZ(i*sin(TIME));
+        mvstack.push(model_view);
+        model_view *= Scale(0.2, 1, 0.2);
         drawCube();
-        model_trans = mvstack.pop();
+        model_view = mvstack.pop();
+        model_view *= Translate(0, 1.0f, 0);
     }
-    
-    set_colour(1.0f, 0, 0);
-    model_trans *= Translate(0, 1.0f, 0);
-    model_trans *= RotateZ(8*sin(2*TIME));
-    model_view = view_trans * model_trans;
+    set_colour(1,0,0);
+    model_view *= RotateZ(8*sin(TIME));;
     drawSphere();
+    model_view = mvstack.pop();
 }
 
+void drawBeeLeg() {
+    // mvstack.push(model_view);
+}
+
+// void drawSquidLeg(double phase, double rand1, double rand2){
+//     float l_segment = 3, n_segment = 10,
+//     amplitude = 30, omega = 120, theta;
+    
+//     for(int i = 0; i < n_segment;i++){
+//         theta = rand1*amplitude * sin(phase+i*rand2*omega*DegreesToRadians*TIME);
+//         model_view *= RotateZ(theta);
+//         model_view *= Translate(0, l_segment/2, 0);
+//         mvstack.push(model_view);
+//         model_view *= Scale(1, l_segment, 1);
+//         drawCube();
+//         model_view = mvstack.pop();
+//         model_view *= Translate(0, l_segment/2, 0);
+//     }
+ 
+// }
+ 
+// void drawSquid(float randseed){
+//     for(int i = 0; i < 18; i++){
+//         mvstack.push(model_view);
+//         model_view *= RotateY(20*i);
+//         drawSquidLeg(i*i*30 + cos(i+randseed)*100, cos(i+randseed)*2, sin(randseed+i)*2);
+//         model_view = mvstack.pop();
+//     }
+// }
+/*********************************************************
+**********************************************************
+**********************************************************
+ 
+    PROC: display()
+    DOES: this gets called by the event handler to draw
+          the scene, so this is where you need to build
+          your ROBOT --  
+      
+        MAKE YOUR CHANGES AND ADDITIONS HERE
+ 
+    Add other procedures if you like.
+ 
+**********************************************************
+**********************************************************
+**********************************************************/
 void display(void)
 {
     // Clear the screen with the background colour (set in myinit)
@@ -377,38 +417,22 @@ void display(void)
         
     glUniformMatrix4fv( uView, 1, GL_TRUE, model_view );
  
+    model_view = view_trans;
+    
+    mvstack.push(model_view);
     drawGround(view_trans);
-    
-    //Reset model_view matrix to origin, translate down to plane
-    model_view = view_trans * model_trans;
-    drawFlower(view_trans);
+    model_view = mvstack.pop();
+    model_view *= Translate(0,-10,0);
+ 
+    drawFlower();   
 
-    // //model sun
-    // mvstack.push(model_trans);//push
-    // set_colour(0.8f, 0.0f, 0.0f);
-    // model_trans *= Scale(3.0);
-    // model_view = view_trans * model_trans;
-    // drawSphere();
-    // model_trans = mvstack.pop();//pop
-    
-    // //model earth
-    // model_trans *= RotateY(10.0*TIME);
-    // model_trans *= Translate(15.0f, 5*sin(30*DegreesToRadians*TIME), 0.0f);
-    // mvstack.push(model_trans);
-    // model_trans *= RotateY(300.0*TIME);//self rotation of earth
-    // set_colour(0.0f, 0.0f, 0.8f);
-    // model_view = view_trans * model_trans;
-    // drawCube();
-    
-    // model_trans = mvstack.pop();
-    
-    // //model moon
-    // set_colour(0.8f, 0.0f, 0.8f);
-    // model_trans *= RotateY(30.0*TIME);
-    // model_trans *= Translate(2.0f, 0.0f, 0.0f);
-    // model_trans *= Scale(0.2);
-    // model_view = view_trans * model_trans;
-    // drawCylinder();
+    // for(int i = 0; i < 9; i++){
+    //     mvstack.push(model_view);
+    //     model_view *= Translate(40*(i/3 - 1), 0, 40*(i%3-1));
+    //     set_colour(1.0 - 0.1*i, 0.1*i, i*i/81);
+    //     drawSquid(i);
+    //     model_view = mvstack.pop();
+    // }
     
     glutSwapBuffers();
     if(Recording == 1)
