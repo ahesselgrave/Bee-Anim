@@ -351,17 +351,45 @@ void drawFlower() {
 }
 
 void drawBeeLeg() {
-    // mvstack.push(model_view);
+
+}
+
+void drawBeeWing() {
+
 }
 
 void drawBee() {
     //temp motion code
     //TODO: substitute cube with bee
     mvstack.push(model_view);
-    set_colour(0,0,1);
-    model_view *= RotateY(-TIME*60.0);
+    //everything in the bee moves in this translation-rotation about the flower
+    model_view *= RotateY(-TIME*60.0); //note this rotation is close but no cigar
     model_view *= Translate(10*cos(TIME*DegreesToRadians), 8+2*sin(3*TIME), 10*sin(TIME*DegreesToRadians));
-    drawCylinder();
+    //preserve movement 
+    mvstack.push(model_view);
+
+    //draw abdomen prism
+    set_colour(0.8f, 0.8f, 0.8f);
+    model_view *= Scale(0.75, 0.75, 2);
+    drawCube();
+    model_view = mvstack.pop();
+
+    //draw spherical head
+    mvstack.push(model_view);
+    set_colour(0.8f, 0, 0.8f);
+    model_view *= Translate(0,0,1.5);
+    model_view *= Scale(0.5,0.5, 0.5);
+    drawSphere();
+    model_view = mvstack.pop();
+ 
+    //draw thorax oblong sphere
+    mvstack.push(model_view);
+    set_colour(0.8f, 0.8f, 0);
+    model_view *= Translate(0,0,-3);
+    model_view *= Scale(0.5, 0.5, 2);
+    drawSphere();
+    model_view = mvstack.pop();
+
     model_view = mvstack.pop();
 }
 // void drawSquidLeg(double phase, double rand1, double rand2){
