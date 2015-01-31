@@ -354,8 +354,17 @@ void drawBeeLeg() {
 
 }
 
-void drawBeeWing() {
-
+void drawBeeWing(int i) {
+    if (i != 1 && i != -1){
+        fprintf(stderr, "Error, i must be -1 or 1\n");
+        exit(1);
+    }
+    mvstack.push(model_view);
+    set_colour(0.8f, 0.8f, 0.8f);
+    model_view *= Scale(2,2,0.1);
+    model_view *= RotateX(45+i*45*sin(TIME));
+    drawCube();
+    model_view = mvstack.pop();
 }
 
 void drawBee() {
@@ -364,20 +373,13 @@ void drawBee() {
     mvstack.push(model_view);
     //everything in the bee moves in this translation-rotation about the flower
     model_view *= RotateY(-TIME*60.0); //note this rotation is close but no cigar
-    model_view *= Translate(10*cos(TIME*DegreesToRadians), 8+2*sin(3*TIME), 10*sin(TIME*DegreesToRadians));
+    model_view *= Translate(10*sin( TIME*DegreesToRadians), 8+2*sin(3*TIME), 10*cos(TIME*DegreesToRadians));
     //preserve movement 
-    mvstack.push(model_view);
-
-    //draw abdomen prism
-    set_colour(0.8f, 0.8f, 0.8f);
-    model_view *= Scale(0.75, 0.75, 2);
-    drawCube();
-    model_view = mvstack.pop();
 
     //draw spherical head
     mvstack.push(model_view);
     set_colour(0.8f, 0, 0.8f);
-    model_view *= Translate(0,0,1.5);
+    model_view *= Translate(-1.5,0,0);
     model_view *= Scale(0.5,0.5, 0.5);
     drawSphere();
     model_view = mvstack.pop();
@@ -385,10 +387,27 @@ void drawBee() {
     //draw thorax oblong sphere
     mvstack.push(model_view);
     set_colour(0.8f, 0.8f, 0);
-    model_view *= Translate(0,0,-3);
-    model_view *= Scale(0.5, 0.5, 2);
+    model_view *= Translate(3,0,0);
+    model_view *= Scale(2, 0.5, 0.5);
     drawSphere();
     model_view = mvstack.pop();
+
+    //draw abdomen prism
+    mvstack.push(model_view);
+    set_colour(0.8f, 0.8f, 0.8f);
+    model_view *= Scale(2, 0.5, 0.5);
+    drawCube();
+    model_view = mvstack.pop();
+
+    //draw wings
+    mvstack.push(model_view);
+    set_colour(0.8f, 0.8f, 0.8f);
+    //Translate to top of body
+    //draw left wing first
+    model_view *= Translate(0,3.5, 0.4);
+    drawBeeWing(1);
+    model_view = mvstack.pop();
+
 
     model_view = mvstack.pop();
 }
